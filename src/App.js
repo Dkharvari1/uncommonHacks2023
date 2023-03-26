@@ -46,44 +46,43 @@ function App() {
     var neutral = 0;
     var surprised = 0;
     var fearful = 0;
-    const allAverages = new Set();
     var maxEmotionName = null;
     // var disgusted = 0;
     for(var i = 0; i < expressions.length; i++) {
       angry += expressions[i][0];
     }
     angry /= expressions.length;
-    console.log("angry", angry);
+    // console.log("angry", angry);
 
     for (var i = 0; i < expressions.length; i++) {
       happy += expressions[i][1];
     }
     happy /= expressions.length;
-    console.log("happy", happy);
+    // console.log("happy", happy);
 
     for (var i = 0; i < expressions.length; i++) {
       sad += expressions[i][2];
     }
     sad /= expressions.length;
-    console.log("sad", sad);
+    // console.log("sad", sad);
 
     for (var i = 0; i < expressions.length; i++) {
       neutral += expressions[i][3];
     }
     neutral /= expressions.length;
-    console.log("neutral", neutral);
+    // console.log("neutral", neutral);
 
     for (var i = 0; i < expressions.length; i++) {
       surprised += expressions[i][4];
     }
     surprised /= expressions.length;
-    console.log("surprised", surprised);
+    // console.log("surprised", surprised);
 
     for (var i = 0; i < expressions.length; i++) {
       fearful += expressions[i][5];
     }
     fearful /= expressions.length;
-    console.log("fearful", fearful);
+    // console.log("fearful", fearful);
     const emotions = {
       sad: sad,
       happy: happy,
@@ -99,28 +98,12 @@ function App() {
         break;
       }
     }
-    console.log(maxEmotionName);
-    console.log(maxEmotionValue);
+    // console.log(maxEmotionName);
+    // console.log(maxEmotionValue);
     return {
       maxName: maxEmotionName,
       maxValue: maxEmotionValue
     }
-
-    // const maxVal = Object.entries(emotions).sort((prev, next) => prev.)
-    // return 
-
-    // })
-    
-    
-    allAverages.add(angry);
-    allAverages.add(happy);
-    allAverages.add(sad);
-    allAverages.add(neutral);
-    allAverages.add(surprised);
-    allAverages.add(fearful);
-    console.log(allAverages);
-    /// [[]sa]
-    console.log(Math.max(allAverages));
   }
 
   const faceDetection = async () => {
@@ -137,15 +120,15 @@ function App() {
         width: 940,
         height: 650,
       });
-      console.log("--------------------------------------------------------------------");
-      console.log("Happy", detections.expressions.happy);
-      console.log("Sad", detections.expressions.sad);
-      console.log("Neutral", detections.expressions.neutral);
-      console.log("Angry", detections.expressions.angry);
-      console.log("Surprised", detections.expressions.surprised);
-      console.log("Fearful", detections.expressions.fearful);
-      console.log("Disgusted", detections.expressions.disgusted);
-      console.log("--------------------------------------------------------------------");
+      // console.log("--------------------------------------------------------------------");
+      // console.log("Happy", detections.expressions.happy);
+      // console.log("Sad", detections.expressions.sad);
+      // console.log("Neutral", detections.expressions.neutral);
+      // console.log("Angry", detections.expressions.angry);
+      // console.log("Surprised", detections.expressions.surprised);
+      // console.log("Fearful", detections.expressions.fearful);
+      // console.log("Disgusted", detections.expressions.disgusted);
+      // console.log("--------------------------------------------------------------------");
       expressions.push([
         detections.expressions.angry,
         detections.expressions.happy,
@@ -155,8 +138,8 @@ function App() {
         detections.expressions.fearful,
         detections.expressions.disgusted
       ])
-      console.log((detections.expressions.angry + detections.expressions.happy + detections.expressions.sad + detections.expressions.neutral + detections.expressions.surprised + detections.expressions.fearful + detections.expressions.disgusted))
-      console.log(detections);
+      // console.log((detections.expressions.angry + detections.expressions.happy + detections.expressions.sad + detections.expressions.neutral + detections.expressions.surprised + detections.expressions.fearful + detections.expressions.disgusted))
+      // console.log(detections);
 
       faceapi.draw.drawDetections(canvasRef.current, resized)
       faceapi.draw.drawFaceLandmarks(canvasRef.current, resized)
