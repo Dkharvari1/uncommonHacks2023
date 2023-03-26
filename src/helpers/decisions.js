@@ -16,9 +16,16 @@ export async function makeDecision(mood) {
   console.log("trackIDs", trackIDs);
 
   const IDs = await getSongBasedOnMood(mood, trackIDs.slice(0, 100).join());
-  console.log("***", IDs);
+  const IDs2 = await getSongBasedOnMood(mood, trackIDs.slice(100, 200).join());
+  const IDs3 = await getSongBasedOnMood(mood, trackIDs.slice(200, 300).join());
+  const IDs4 = await getSongBasedOnMood(mood, trackIDs.slice(300, 400).join());
+  const IDs5 = await getSongBasedOnMood(mood, trackIDs.slice(400, 500).join());
+  const IDs6 = await getSongBasedOnMood(mood, trackIDs.slice(500, 600).join());
 
-  return (await SPOTIFY_API.getTracks(IDs)).tracks;
+  const res = [...IDs, ...IDs2, ...IDs3, ...IDs4, ...IDs5, ...IDs6];
+  console.log("***", res);
+
+  return (await SPOTIFY_API.getTracks(res)).tracks;
 }
 
 async function getSongBasedOnMood(mood, trackIDs) {
@@ -28,7 +35,6 @@ async function getSongBasedOnMood(mood, trackIDs) {
   // mood = "happy";
   const matchedTracks = features.audio_features.map(feature => {
     const { valence, energy, danceability } = feature;
-    console.log(feature);
     if (mood == "angry") {
       if (valence <= 0.4 && energy >= 0.7 && danceability <= 0.4) {
         return feature.id;
