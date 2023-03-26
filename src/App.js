@@ -1,10 +1,14 @@
 import { useRef, useEffect, useState } from "react";
 import "./App.css";
 import Button from "react-bootstrap/Button";
-import Card from "react-bootstrap/Card";
+import {Card, Container, Row} from "react-bootstrap";
 import * as faceapi from "face-api.js";
 import SongCard from "./components/playlistTable/SongCard";
 import { makeDecision } from "./helpers/decisions";
+import { type } from "@testing-library/user-event/dist/type";
+
+const CLIENT_ID = "6d0de60304354fedb5667d4673efdd41";
+const CLIENT_SECRET = "b6358f2e564e4d10931ea62d63d06558";
 
 function App() {
   const videoRef = useRef();
@@ -12,6 +16,8 @@ function App() {
   const [expressions, setExpressions] = useState([]);
   const [start, setStart] = useState(false);
   const [emotion, setEmotion] = useState(null);
+  const [accessToken, setAccessToken] = useState("");
+  const [tracks, setTracks] = useState([]);
 
   const [isHover, setIsHover] = useState(false);
   const handleMouseEnter = () => {
@@ -21,11 +27,39 @@ function App() {
     setIsHover(false);
   };
 
-  // useEffect(() => {
-  //   startVideo();
+  useEffect(() => {
+    var authParams = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: 'grant_type=client_credentials&client_id=' + CLIENT_ID + '&client_secret=' + CLIENT_SECRET
+    }
+    fetch('https://accounts.spotify.com/api/token', authParams)
+      .then(result => result.json())
+      .then(data => setAccessToken(data.access_token))
+  }, []);
 
-  //   videoRef && loadModels();
-  // }, []);
+  useEffect(() => {
+    search();
+  }, [emotion]);
+
+  const search = async() => {
+    console.log("before", emotion);
+    var parameters = {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + accessToken
+      }
+    }
+    var ID = await fetch('https://api.spotify.com/v1/search?q=' + emotion +'&type=track', parameters)
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);
+      setTracks(data.tracks.items);
+    })
+  }
 
   const loadModels = () => {
     Promise.all([
@@ -123,7 +157,6 @@ function App() {
     console.log("maxEmotionName", maxEmotionValue);
     setEmotion(maxEmotionName);
     setStart(false);
-    stopVideo();
     return {
       maxName: maxEmotionName,
       maxValue: maxEmotionValue,
@@ -196,7 +229,6 @@ function App() {
 
     videoRef && loadModels();
   }
-
   return (
     <div className="app">
       <div style={{paddingBottom: 100}}>
@@ -223,6 +255,20 @@ function App() {
       </div>
       <div>
         {/* <SongCard /> */}
+        <Container>
+          <Row className="mx-2 row row-cols-4">
+            {tracks.map((track, i) => {
+              return (
+                <Card>
+                  <Card.Img src={track.album.images[0].url} />
+                  <Card.Body>
+                    <Card.Title>{track.name}</Card.Title>
+                  </Card.Body>
+                </Card>
+              )
+            })}
+          </Row>
+        </Container>
       </div>
       
     </div>
