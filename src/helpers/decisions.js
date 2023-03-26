@@ -49,7 +49,7 @@ async function getSongBasedOnMood(mood, trackIDs) {
         return feature.id;
       }
     } else if (mood == "happy") {
-      if (valence >= 0.7 && energy >= 0.7 && danceability >= 0.7) {
+      if (valence >= 0.5 && energy >= 0.6 && danceability >= 0.6) {
         return feature.id;
       }
     } else if (mood == "fearful") {
