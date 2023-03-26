@@ -1,23 +1,23 @@
 import React from "react";
 import Table from "react-bootstrap/Table";
-import tracks from "../../data/smallerData";
+// import tracks from "../../data/smallerData";
 import SongRow from "./SongRow";
 
-const SongCard = (songs) => {
-  console.log(tracks);
+const SongCard = ({songs}) => {
+  // console.log(tracks);
   return (
-    <Table striped bordered>
+    <Table striped bordered style={{background: '#000'}}>
       <thead>
         <tr>
-          <th>#</th>
-          <th>Title</th>
-          <th>Artist</th>
-          <th>Album</th>
-          <th>Preview</th>
+          <th style={{color: '#fff'}}>#</th>
+          <th style={{color: '#fff'}}>Title</th>
+          <th style={{ color: '#fff' }}>Artist</th>
+          <th style={{ color: '#fff' }}>Album</th>
+          <th style={{ color: '#fff' }}>Preview</th>
         </tr>
       </thead>
       <tbody>
-        {tracks.map((song) => (
+        {songs.map((song) => (
           <>
           {/* <div>{song.name}</div> */}
             <SongRow song={song} />

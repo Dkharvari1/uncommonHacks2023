@@ -9,6 +9,9 @@ import { type } from "@testing-library/user-event/dist/type";
 
 const CLIENT_ID = "6d0de60304354fedb5667d4673efdd41";
 const CLIENT_SECRET = "b6358f2e564e4d10931ea62d63d06558";
+const REDIRECT_URI = "http://localhost:3000/callback";
+const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize";
+const RESPONSE_TYPE = "token";
 
 function App() {
   const videoRef = useRef();
@@ -18,8 +21,11 @@ function App() {
   const [emotion, setEmotion] = useState(null);
   const [accessToken, setAccessToken] = useState("");
   const [tracks, setTracks] = useState([]);
+  const [authPerms, setAuthPerms] = useState("");
 
   const [isHover, setIsHover] = useState(false);
+  const [isHover2, setIsHover2] = useState(false);
+  const [isHover3, setIsHover3] = useState(false);
   const handleMouseEnter = () => {
     setIsHover(true);
   };
@@ -27,22 +33,39 @@ function App() {
     setIsHover(false);
   };
 
-  useEffect(() => {
-    var authParams = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body:
-        "grant_type=client_credentials&client_id=" +
-        CLIENT_ID +
-        "&client_secret=" +
-        CLIENT_SECRET,
-    };
-    fetch("https://accounts.spotify.com/api/token", authParams)
-      .then(result => result.json())
-      .then(data => setAccessToken(data.access_token));
-  }, []);
+  const Enter1 = () => {
+    setIsHover2(true)
+  }
+  const Leave1 = () => {
+    setIsHover2(false);
+  }
+
+  const Enter2 = () => {
+    setIsHover3(true);
+  }
+  const Leave2 = () => {
+    setIsHover3(false);
+  }
+
+  // useEffect(() => {
+    // var authParams = {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/x-www-form-urlencoded",
+    //   },
+    //   body:
+    //     "grant_type=client_credentials&client_id=" +
+    //     CLIENT_ID +
+    //     "&client_secret=" +
+    //     CLIENT_SECRET,
+    // };
+    // fetch("https://accounts.spotify.com/api/token", authParams)
+    //   .then(result => result.json())
+    //   .then(data => {
+    //     console.log("data", data)
+    //     setAccessToken(data.access_token)
+    //   });
+  // }, []);
 
   // useEffect(() => {
   //   search();
@@ -58,13 +81,13 @@ function App() {
   //     },
   //   };
   //   var ID = await fetch(
-  //     "https://api.spotify.com/v1/search?q=" + emotion + "&type=track",
+  //     "https://api.spotify.com/v1/browse/categories/" + emotion + '/playlists',
   //     parameters
   //   )
   //     .then(response => response.json())
   //     .then(data => {
   //       console.log(data);
-  //       setTracks(data.tracks.items);
+  //       // setTracks(data.tracks.items);
   //     });
   // };
 
@@ -170,6 +193,30 @@ function App() {
     };
   };
 
+  const handleCreatePlaylist = async() => {
+    var parameters = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + accessToken,
+    },
+    data: {
+      'name': 'New Playlist',
+      "description": "New playlist description",
+      "public": false
+    }
+    };
+    var ID = await fetch(
+      "https://api.spotify.com/v1/users/" + authPerms + "/playlists",
+      parameters
+    )
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+        // setTracks(data.tracks.items);
+      });
+  }
+
   const faceDetection = async () => {
     const faceDetectionInterval = setInterval(async () => {
       const detections = await faceapi
@@ -222,13 +269,15 @@ function App() {
       clearInterval(faceDetectionInterval);
       const avg = averageAllEmotions();
       console.log("average", avg);
-      const song = await makeDecision(avg.maxName);
-      console.log("song", song);
-      setTracks(song);
+      const songs = await makeDecision(avg.maxName);
+      console.log("song", songs);
+      setTracks(songs);
     }, 6000);
   };
 
   const startScan = () => {
+    setTracks([]);
+    setExpressions([]);
     setStart(true);
     startVideo();
     setEmotion("None");
@@ -269,6 +318,25 @@ function App() {
               justifyContent: "center",
             }}
           >
+              <button
+                style={{
+                  width: 200,
+                  height: 50,
+                  backgroundColor: isHover2 ? "#32d16a" : "#1DB954",
+                  borderRadius: 50,
+                  padding: "auto",
+                  color: "#fff",
+                  fontFamily: "Ubuntu",
+                  scale: isHover2 ? "1.1" : "1",
+                  transition: "all .2s ease-in-out",
+                  marginRight: 50
+                }}
+                onClick={() => {window.location.replace(`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}`)}}
+                onMouseEnter={Enter1}
+                onMouseLeave={Leave1}
+              >
+                Sign In
+              </button>
             <button
               style={{
                 width: 200,
@@ -294,8 +362,26 @@ function App() {
         </p>
       </div>
       <div>
-        {/* <SongCard /> */}
-        <Container>
+        <SongCard songs={tracks} />
+        {/* <button
+          style={{
+            width: 200,
+            height: 50,
+            backgroundColor: isHover3 ? "#32d16a" : "#1DB954",
+            borderRadius: 50,
+            padding: "auto",
+            color: "#fff",
+            fontFamily: "Ubuntu",
+            scale: isHover3 ? "1.1" : "1",
+            transition: "all .2s ease-in-out",
+          }}
+          onClick={handleCreatePlaylist}
+          onMouseEnter={Enter2}
+          onMouseLeave={Leave2}
+        >
+          Create Playlist
+        </button> */}
+        {/* <Container>
           <Row className="mx-2 row row-cols-4">
             {tracks.map((track, i) => {
               return (
@@ -308,7 +394,7 @@ function App() {
               );
             })}
           </Row>
-        </Container>
+        </Container> */}
       </div>
     </div>
   );

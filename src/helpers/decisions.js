@@ -5,8 +5,7 @@ import SpotifyWebApi from "spotify-web-api-js";
  * Returns: an array of songs that will be the * playlist
  */
 
-const SPOTIFY_ACCESS_TOKEN =
-  "BQCTWoZb0fFcCPQGWy5zy9aAfKRehhTP1obWtHmDiTE-OXETKJ6ZjdrjB50fgJJHsMva-2RqIdg1G_GGwcKVesGsm-Nd7X65Dz2_uT1z075mFWHu7losmtRiEnac8lWX7vWTRuGjHXwQLmh8IyfIIlE7k_FNtpePRjx1SAasCelin_jsXxm8uJeVx7Cvi5r1x9tz";
+const SPOTIFY_ACCESS_TOKEN = "BQBmkL4mrK4Z2OeXxLePrVuQ-FT9zbTYe7bva3csNNsGxE29E3buZAtIQyqRrEXXdWOl4dtBlbuu_eDkp3W9Edygl0j_KYRilb1JTEx_VHrtPG3ayP_LO_QH7RgeDmu3WgcmDQm5xvO4GEWcFwLerTI1WW3cvhS8_3oJ6U-bS1GlILQQPg"
 const SPOTIFY_API = new SpotifyWebApi();
 SPOTIFY_API.setAccessToken(SPOTIFY_ACCESS_TOKEN);
 
@@ -49,7 +48,7 @@ async function getSongBasedOnMood(mood, trackIDs) {
         return feature.id;
       }
     } else if (mood == "happy") {
-      if (valence >= 0.7 && energy >= 0.7 && danceability >= 0.7) {
+      if (valence >= 0.5 && energy >= 0.5 && danceability >= 0.5) {
         return feature.id;
       }
     } else if (mood == "fearful") {
