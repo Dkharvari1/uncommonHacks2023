@@ -12,7 +12,7 @@ let song_sample = tracks.slice(0, 10);
 export function makeDecision(mood) {
   var spot = new Spotify();
   spot.setAccessToken(
-    "BQD-s_K5Pl4IeTC2QQWTRASqDxKfs1N3EBpiSYXQ5O6zuhGkYak0fUD5gYN8f-UlbLx6huHzZrVyCnjhDyEFN_1f1dsll3EYHxmvetNCacpNw_Xs34m2nD7HSckzeIpv_4taSgdZfAbkNPHb3GVjGvnkJ8MjUfEZ237wOO0PCQW0fj9-ZCAHNr41uxJZyVUkhNjq"
+    "BQAkvb3T-FksTi70pxcj41mfA4eDKLZCYTF-MSEv0KnjeExcKeyMPSv0bF6-BxVges5u21_upDASyVY4eBPPjD3x9iYOlvtiHVXxJlU7Rmq4LGycUIkx7-n9fk8770ZUZhVc3NxwDYZooyXKPIc6ZOVxAyyEwvHs0049Gg53hoh-eyjugy3CbsxsKFof6aoTp3M4"
   );
   let selected_songs = song_sample.map(async song => {
     const uriRaw = song.uri;

@@ -16,10 +16,6 @@ function App() {
     startVideo();
 
     videoRef && loadModels();
-    const songs = makeDecision("happy");
-    Promise.all(songs).then(values => {
-      console.log(values.filter(x => x));
-    });
   }, []);
 
   const loadModels = () => {
@@ -163,7 +159,11 @@ function App() {
       clearInterval(faceDetectionInterval);
       const avg = averageAllEmotions();
       console.log("average", avg);
-    }, 3500);
+      const songs = makeDecision(avg.maxName);
+      Promise.all(songs).then(values => {
+        console.log(values.filter(x => x));
+      });
+    }, 8000);
   };
 
   return (
