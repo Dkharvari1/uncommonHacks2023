@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState } from 'react';
 import './App.css';
 import * as faceapi from "face-api.js";
+import Home from './components/Home';
 
 function App() {
   const videoRef = useRef();
@@ -100,6 +101,10 @@ function App() {
     }
     console.log(maxEmotionName);
     console.log(maxEmotionValue);
+    return {
+      maxName: maxEmotionName,
+      maxValue: maxEmotionValue
+    }
 
     // const maxVal = Object.entries(emotions).sort((prev, next) => prev.)
     // return 
@@ -161,7 +166,8 @@ function App() {
 
     setTimeout(()=> {
       clearInterval(faceDetectionInterval)
-      averageAllEmotions();
+      const avg = averageAllEmotions();
+      console.log("average", avg);
     }, 3500)
 
   }
@@ -174,6 +180,7 @@ function App() {
         <video crossOrigin='anonymous' ref={videoRef} autoPlay ></video>
       </div>
       <canvas ref={canvasRef} width="940" height="650" className='app__canvas' />
+      {/* <Home /> */}
 
     </div>
   );
