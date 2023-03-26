@@ -4,17 +4,22 @@ import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import * as faceapi from "face-api.js";
 import SongCard from "./components/playlistTable/SongCard";
-
+import { makeDecision } from "./helpers/decisions";
 
 function App() {
   const videoRef = useRef();
   const canvasRef = useRef();
   const [expressions, setExpressions] = useState([]);
+  var count = 0;
 
   useEffect(() => {
     startVideo();
 
     videoRef && loadModels();
+    const songs = makeDecision("happy");
+    Promise.all(songs).then(values => {
+      console.log(values.filter(x => x));
+    });
   }, []);
 
   const loadModels = () => {
@@ -31,16 +36,83 @@ function App() {
   const startVideo = () => {
     navigator.mediaDevices
       .getUserMedia({ video: true })
-      .then((currentStream) => {
+      .then(currentStream => {
         videoRef.current.srcObject = currentStream;
       })
-      .catch((err) => {
+      .catch(err => {
         console.error(err);
       });
   };
 
+  const averageAllEmotions = () => {
+    var angry = 0;
+    var happy = 0;
+    var sad = 0;
+    var neutral = 0;
+    var surprised = 0;
+    var fearful = 0;
+    var maxEmotionName = null;
+    // var disgusted = 0;
+    for (var i = 0; i < expressions.length; i++) {
+      angry += expressions[i][0];
+    }
+    angry /= expressions.length;
+    // console.log("angry", angry);
+
+    for (var i = 0; i < expressions.length; i++) {
+      happy += expressions[i][1];
+    }
+    happy /= expressions.length;
+    // console.log("happy", happy);
+
+    for (var i = 0; i < expressions.length; i++) {
+      sad += expressions[i][2];
+    }
+    sad /= expressions.length;
+    // console.log("sad", sad);
+
+    for (var i = 0; i < expressions.length; i++) {
+      neutral += expressions[i][3];
+    }
+    neutral /= expressions.length;
+    // console.log("neutral", neutral);
+
+    for (var i = 0; i < expressions.length; i++) {
+      surprised += expressions[i][4];
+    }
+    surprised /= expressions.length;
+    // console.log("surprised", surprised);
+
+    for (var i = 0; i < expressions.length; i++) {
+      fearful += expressions[i][5];
+    }
+    fearful /= expressions.length;
+    // console.log("fearful", fearful);
+    const emotions = {
+      sad: sad,
+      happy: happy,
+      angry: angry,
+      surprised: surprised,
+      fearful: fearful,
+      neutral: neutral,
+    };
+    const maxEmotionValue = Math.max(...Object.values(emotions));
+    for (const x in emotions) {
+      if (emotions[x] === maxEmotionValue) {
+        maxEmotionName = x;
+        break;
+      }
+    }
+    console.log("maxEmotionName", maxEmotionName);
+    console.log("maxEmotionName", maxEmotionValue);
+    return {
+      maxName: maxEmotionName,
+      maxValue: maxEmotionValue,
+    };
+  };
+
   const faceDetection = async () => {
-    setInterval(async () => {
+    const faceDetectionInterval = setInterval(async () => {
       const detections = await faceapi
         .detectSingleFace(
           videoRef.current,
@@ -61,19 +133,15 @@ function App() {
         width: 940,
         height: 650,
       });
-      console.log(
-        "--------------------------------------------------------------------"
-      );
-      console.log("Happy", detections.expressions.happy);
-      console.log("Sad", detections.expressions.sad);
-      console.log("Neutral", detections.expressions.neutral);
-      console.log("Angry", detections.expressions.angry);
-      console.log("Surprised", detections.expressions.surprised);
-      console.log("Fearful", detections.expressions.fearful);
-      console.log("Disgusted", detections.expressions.disgusted);
-      console.log(
-        "--------------------------------------------------------------------"
-      );
+      // console.log("--------------------------------------------------------------------");
+      // console.log("Happy", detections.expressions.happy);
+      // console.log("Sad", detections.expressions.sad);
+      // console.log("Neutral", detections.expressions.neutral);
+      // console.log("Angry", detections.expressions.angry);
+      // console.log("Surprised", detections.expressions.surprised);
+      // console.log("Fearful", detections.expressions.fearful);
+      // console.log("Disgusted", detections.expressions.disgusted);
+      // console.log("--------------------------------------------------------------------");
       expressions.push([
         detections.expressions.angry,
         detections.expressions.happy,
@@ -83,21 +151,19 @@ function App() {
         detections.expressions.fearful,
         detections.expressions.disgusted,
       ]);
-      console.log(
-        detections.expressions.angry +
-          detections.expressions.happy +
-          detections.expressions.sad +
-          detections.expressions.neutral +
-          detections.expressions.surprised +
-          detections.expressions.fearful +
-          detections.expressions.disgusted
-      );
-      console.log(detections);
+      // console.log((detections.expressions.angry + detections.expressions.happy + detections.expressions.sad + detections.expressions.neutral + detections.expressions.surprised + detections.expressions.fearful + detections.expressions.disgusted))
+      // console.log(detections);
 
       faceapi.draw.drawDetections(canvasRef.current, resized);
       faceapi.draw.drawFaceLandmarks(canvasRef.current, resized);
       faceapi.draw.drawFaceExpressions(canvasRef.current, resized);
-    }, 1000);
+    }, 500);
+
+    setTimeout(() => {
+      clearInterval(faceDetectionInterval);
+      const avg = averageAllEmotions();
+      console.log("average", avg);
+    }, 3500);
   };
 
   return (
@@ -112,7 +178,9 @@ function App() {
         height="650"
         className="app__canvas"
       />
-      <SongCard/>
+      <br />
+      <br />
+      <SongCard />
     </div>
   );
 }
