@@ -6,11 +6,14 @@ function App() {
   const videoRef = useRef();
   const canvasRef = useRef();
   const [expressions, setExpressions] = useState([]);
+  var count = 0;
 
   useEffect(() => {
     startVideo();
 
     videoRef && loadModels();
+
+  
 
   }, []);
 
@@ -35,8 +38,88 @@ function App() {
       });
   }
 
+  const averageAllEmotions = () => {
+    var angry = 0;
+    var happy = 0;
+    var sad = 0;
+    var neutral = 0;
+    var surprised = 0;
+    var fearful = 0;
+    const allAverages = new Set();
+    var maxEmotionName = null;
+    // var disgusted = 0;
+    for(var i = 0; i < expressions.length; i++) {
+      angry += expressions[i][0];
+    }
+    angry /= expressions.length;
+    console.log("angry", angry);
+
+    for (var i = 0; i < expressions.length; i++) {
+      happy += expressions[i][1];
+    }
+    happy /= expressions.length;
+    console.log("happy", happy);
+
+    for (var i = 0; i < expressions.length; i++) {
+      sad += expressions[i][2];
+    }
+    sad /= expressions.length;
+    console.log("sad", sad);
+
+    for (var i = 0; i < expressions.length; i++) {
+      neutral += expressions[i][3];
+    }
+    neutral /= expressions.length;
+    console.log("neutral", neutral);
+
+    for (var i = 0; i < expressions.length; i++) {
+      surprised += expressions[i][4];
+    }
+    surprised /= expressions.length;
+    console.log("surprised", surprised);
+
+    for (var i = 0; i < expressions.length; i++) {
+      fearful += expressions[i][5];
+    }
+    fearful /= expressions.length;
+    console.log("fearful", fearful);
+    const emotions = {
+      sad: sad,
+      happy: happy,
+      angry: angry,
+      surprised: surprised,
+      fearful: fearful,
+      neutral: neutral,
+    }
+    const maxEmotionValue = Math.max(...Object.values(emotions));
+    for (const x in emotions) {
+      if (emotions[x] === maxEmotionValue) {
+        maxEmotionName = x;
+        break;
+      }
+    }
+    console.log(maxEmotionName);
+    console.log(maxEmotionValue);
+
+    // const maxVal = Object.entries(emotions).sort((prev, next) => prev.)
+    // return 
+
+    // })
+    
+    
+    allAverages.add(angry);
+    allAverages.add(happy);
+    allAverages.add(sad);
+    allAverages.add(neutral);
+    allAverages.add(surprised);
+    allAverages.add(fearful);
+    console.log(allAverages);
+    /// [[]sa]
+    console.log(Math.max(allAverages));
+  }
+
   const faceDetection = async () => {
-    setInterval(async () => {
+    const faceDetectionInterval = setInterval(async () => {
       const detections = await faceapi.detectSingleFace(videoRef.current, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions();
 
       canvasRef.current.innerHtml = faceapi.createCanvasFromMedia(videoRef.current);
@@ -75,7 +158,14 @@ function App() {
       faceapi.draw.drawFaceExpressions(canvasRef.current, resized)
 
     }, 1000)
+
+    setTimeout(()=> {
+      clearInterval(faceDetectionInterval)
+      averageAllEmotions();
+    }, 3500)
+
   }
+
 
   return (
     <div className="app">
