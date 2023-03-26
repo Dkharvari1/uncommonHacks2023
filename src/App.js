@@ -5,17 +5,21 @@ import Card from "react-bootstrap/Card";
 import * as faceapi from "face-api.js";
 import SongCard from "./components/playlistTable/SongCard";
 import { makeDecision } from "./helpers/decisions";
+import SpotifyWebApi from "spotify-web-api-js";
 
 function App() {
   const videoRef = useRef();
   const canvasRef = useRef();
   const [expressions, setExpressions] = useState([]);
   var count = 0;
-
+  const SPOTIFY_ACCESS_TOKEN =
+    "BQCTWoZb0fFcCPQGWy5zy9aAfKRehhTP1obWtHmDiTE-OXETKJ6ZjdrjB50fgJJHsMva-2RqIdg1G_GGwcKVesGsm-Nd7X65Dz2_uT1z075mFWHu7losmtRiEnac8lWX7vWTRuGjHXwQLmh8IyfIIlE7k_FNtpePRjx1SAasCelin_jsXxm8uJeVx7Cvi5r1x9tz";
   useEffect(() => {
+    const SPOTIFY_API = new SpotifyWebApi();
+    SPOTIFY_API.setAccessToken(SPOTIFY_ACCESS_TOKEN);
     startVideo();
-
     videoRef && loadModels();
+    // makeDecision();
   }, []);
 
   const loadModels = () => {
@@ -155,14 +159,12 @@ function App() {
       faceapi.draw.drawFaceExpressions(canvasRef.current, resized);
     }, 500);
 
-    setTimeout(() => {
+    setTimeout(async () => {
       clearInterval(faceDetectionInterval);
       const avg = averageAllEmotions();
       console.log("average", avg);
-      const songs = makeDecision(avg.maxName);
-      Promise.all(songs).then(values => {
-        console.log(values.filter(x => x));
-      });
+      const song = await makeDecision(avg.maxName);
+      console.log("song", song);
     }, 8000);
   };
 
