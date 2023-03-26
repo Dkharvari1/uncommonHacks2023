@@ -10,13 +10,21 @@ function App() {
   const videoRef = useRef();
   const canvasRef = useRef();
   const [expressions, setExpressions] = useState([]);
-  var count = 0;
+  const [start, setStart] = useState(false);
 
-  useEffect(() => {
-    startVideo();
+  const [isHover, setIsHover] = useState(false);
+  const handleMouseEnter = () => {
+    setIsHover(true);
+  };
+  const handleMouseLeave = () => {
+    setIsHover(false);
+  };
 
-    videoRef && loadModels();
-  }, []);
+  // useEffect(() => {
+  //   startVideo();
+
+  //   videoRef && loadModels();
+  // }, []);
 
   const loadModels = () => {
     Promise.all([
@@ -32,6 +40,17 @@ function App() {
   const startVideo = () => {
     navigator.mediaDevices
       .getUserMedia({ video: true })
+      .then(currentStream => {
+        videoRef.current.srcObject = currentStream;
+      })
+      .catch(err => {
+        console.error(err);
+      });
+  };
+
+  const stopVideo = () => {
+    navigator.mediaDevices
+      .getUserMedia({ video: false })
       .then(currentStream => {
         videoRef.current.srcObject = currentStream;
       })
@@ -101,6 +120,8 @@ function App() {
     }
     console.log("maxEmotionName", maxEmotionName);
     console.log("maxEmotionName", maxEmotionValue);
+    setStart(false);
+    stopVideo();
     return {
       maxName: maxEmotionName,
       maxValue: maxEmotionValue,
@@ -166,21 +187,40 @@ function App() {
     }, 8000);
   };
 
+  const startScan = () => {
+    setStart(true);
+    startVideo();
+
+    videoRef && loadModels();
+  }
+
   return (
     <div className="app">
-      <h1> AI FACE DETECTION</h1>
-      <div className="app__video">
-        <video crossOrigin="anonymous" ref={videoRef} autoPlay></video>
+      <div style={{paddingBottom: 100}}>
+        <h1 style={{ textAlign: 'center', color: '#1DB954'}}>MOODIFY</h1>
+        {start ? (
+        <div className="app__video">
+          <video crossOrigin="anonymous" ref={videoRef} style={{
+              border: "1px solid", borderImageSlice: 1, borderWidth: '10px', borderImageSource: 'linear-gradient(#00C853, #fff345)', width: "940px", height: "650px"}} autoPlay></video>
+          <canvas
+            ref={canvasRef}
+            width="940"
+            height="650"
+            className="app__canvas"
+          />
+        </div>
+        )
+          : (
+            <div style={{ alignContent: 'center', display: 'flex', justifyContent: 'center'}}>
+              <button style={{ width: 200, height: 50, backgroundColor: isHover ? '#32d16a' : '#1DB954', borderRadius: 50, padding: 'auto', color: '#fff', fontFamily: 'Ubuntu', scale: isHover ? '1.1' : '1', transition: 'all .2s ease-in-out'}} onClick={startScan} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>Start Scan</button>
+            </div>
+          )
+        }
       </div>
-      <canvas
-        ref={canvasRef}
-        width="940"
-        height="650"
-        className="app__canvas"
-      />
-      <br />
-      <br />
-      <SongCard />
+      <div>
+        {/* <SongCard /> */}
+      </div>
+      
     </div>
   );
 }
