@@ -3,7 +3,7 @@ import "./App.css";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import * as faceapi from "face-api.js";
-import SongCard from "./components/playlistTable/songCard";
+import SongCard from "./components/playlistTable/SongCard";
 
 
 function App() {
@@ -112,7 +112,6 @@ function App() {
         height="650"
         className="app__canvas"
       />
-      <br/><br/>
       <SongCard/>
     </div>
   );

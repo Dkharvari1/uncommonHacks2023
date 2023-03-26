@@ -2,7 +2,7 @@ import React from "react";
 
 const SongRow = ({song}) => {
   const track = song;
-  console.log(track);
+  // console.log(track);
 
   return (
     <tr>
