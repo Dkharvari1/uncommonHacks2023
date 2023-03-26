@@ -11,6 +11,7 @@ function App() {
   const canvasRef = useRef();
   const [expressions, setExpressions] = useState([]);
   const [start, setStart] = useState(false);
+  const [emotion, setEmotion] = useState(null);
 
   const [isHover, setIsHover] = useState(false);
   const handleMouseEnter = () => {
@@ -120,6 +121,7 @@ function App() {
     }
     console.log("maxEmotionName", maxEmotionName);
     console.log("maxEmotionName", maxEmotionValue);
+    setEmotion(maxEmotionName);
     setStart(false);
     stopVideo();
     return {
@@ -190,6 +192,7 @@ function App() {
   const startScan = () => {
     setStart(true);
     startVideo();
+    setEmotion("None");
 
     videoRef && loadModels();
   }
@@ -216,6 +219,7 @@ function App() {
             </div>
           )
         }
+        <p style={{color: '#fff', fontFamily: 'Ubuntu', textAlign: 'center'}}>Emotion: {emotion}</p>
       </div>
       <div>
         {/* <SongCard /> */}
