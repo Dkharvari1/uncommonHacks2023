@@ -3,7 +3,7 @@ import Table from "react-bootstrap/Table";
 import tracks from "../../data/smallerData";
 import SongRow from "./SongRow";
 
-const SongCard = (props) => {
+const SongCard = () => {
   console.log(tracks);
   return (
     <Table striped bordered>
@@ -19,8 +19,8 @@ const SongCard = (props) => {
       <tbody>
         {tracks.map((song) => (
           <>
-          {/* <div>{song.album.name}</div> */}
-            <SongRow props={song} />
+          {/* <div>{song.name}</div> */}
+            <SongRow song={song} />
           </>
         ))}
 
