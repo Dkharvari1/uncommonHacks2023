@@ -1,26 +1,72 @@
 import { useRef, useEffect, useState } from "react";
 import "./App.css";
 import Button from "react-bootstrap/Button";
-import Card from "react-bootstrap/Card";
+import { Card, Container, Row } from "react-bootstrap";
 import * as faceapi from "face-api.js";
 import SongCard from "./components/playlistTable/SongCard";
 import { makeDecision } from "./helpers/decisions";
-import SpotifyWebApi from "spotify-web-api-js";
+import { type } from "@testing-library/user-event/dist/type";
+
+const CLIENT_ID = "6d0de60304354fedb5667d4673efdd41";
+const CLIENT_SECRET = "b6358f2e564e4d10931ea62d63d06558";
 
 function App() {
   const videoRef = useRef();
   const canvasRef = useRef();
   const [expressions, setExpressions] = useState([]);
-  var count = 0;
-  const SPOTIFY_ACCESS_TOKEN =
-    "BQCTWoZb0fFcCPQGWy5zy9aAfKRehhTP1obWtHmDiTE-OXETKJ6ZjdrjB50fgJJHsMva-2RqIdg1G_GGwcKVesGsm-Nd7X65Dz2_uT1z075mFWHu7losmtRiEnac8lWX7vWTRuGjHXwQLmh8IyfIIlE7k_FNtpePRjx1SAasCelin_jsXxm8uJeVx7Cvi5r1x9tz";
+  const [start, setStart] = useState(false);
+  const [emotion, setEmotion] = useState(null);
+  const [accessToken, setAccessToken] = useState("");
+  const [tracks, setTracks] = useState([]);
+
+  const [isHover, setIsHover] = useState(false);
+  const handleMouseEnter = () => {
+    setIsHover(true);
+  };
+  const handleMouseLeave = () => {
+    setIsHover(false);
+  };
+
   useEffect(() => {
-    const SPOTIFY_API = new SpotifyWebApi();
-    SPOTIFY_API.setAccessToken(SPOTIFY_ACCESS_TOKEN);
-    startVideo();
-    videoRef && loadModels();
-    // makeDecision();
+    var authParams = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body:
+        "grant_type=client_credentials&client_id=" +
+        CLIENT_ID +
+        "&client_secret=" +
+        CLIENT_SECRET,
+    };
+    fetch("https://accounts.spotify.com/api/token", authParams)
+      .then(result => result.json())
+      .then(data => setAccessToken(data.access_token));
   }, []);
+
+  useEffect(() => {
+    search();
+  }, [emotion]);
+
+  const search = async () => {
+    console.log("before", emotion);
+    var parameters = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + accessToken,
+      },
+    };
+    var ID = await fetch(
+      "https://api.spotify.com/v1/search?q=" + emotion + "&type=track",
+      parameters
+    )
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+        setTracks(data.tracks.items);
+      });
+  };
 
   const loadModels = () => {
     Promise.all([
@@ -36,6 +82,17 @@ function App() {
   const startVideo = () => {
     navigator.mediaDevices
       .getUserMedia({ video: true })
+      .then(currentStream => {
+        videoRef.current.srcObject = currentStream;
+      })
+      .catch(err => {
+        console.error(err);
+      });
+  };
+
+  const stopVideo = () => {
+    navigator.mediaDevices
+      .getUserMedia({ video: false })
       .then(currentStream => {
         videoRef.current.srcObject = currentStream;
       })
@@ -105,6 +162,8 @@ function App() {
     }
     console.log("maxEmotionName", maxEmotionName);
     console.log("maxEmotionName", maxEmotionValue);
+    setEmotion(maxEmotionName);
+    setStart(false);
     return {
       maxName: maxEmotionName,
       maxValue: maxEmotionValue,
@@ -168,21 +227,88 @@ function App() {
     }, 8000);
   };
 
+  const startScan = () => {
+    setStart(true);
+    startVideo();
+    setEmotion("None");
+
+    videoRef && loadModels();
+  };
   return (
     <div className="app">
-      <h1> AI FACE DETECTION</h1>
-      <div className="app__video">
-        <video crossOrigin="anonymous" ref={videoRef} autoPlay></video>
+      <div style={{ paddingBottom: 100 }}>
+        <h1 style={{ textAlign: "center", color: "#1DB954" }}>MOODIFY</h1>
+        {start ? (
+          <div className="app__video">
+            <video
+              crossOrigin="anonymous"
+              ref={videoRef}
+              style={{
+                border: "1px solid",
+                borderImageSlice: 1,
+                borderWidth: "10px",
+                borderImageSource: "linear-gradient(#00C853, #fff345)",
+                width: "940px",
+                height: "650px",
+              }}
+              autoPlay
+            ></video>
+            <canvas
+              ref={canvasRef}
+              width="940"
+              height="650"
+              className="app__canvas"
+            />
+          </div>
+        ) : (
+          <div
+            style={{
+              alignContent: "center",
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
+            <button
+              style={{
+                width: 200,
+                height: 50,
+                backgroundColor: isHover ? "#32d16a" : "#1DB954",
+                borderRadius: 50,
+                padding: "auto",
+                color: "#fff",
+                fontFamily: "Ubuntu",
+                scale: isHover ? "1.1" : "1",
+                transition: "all .2s ease-in-out",
+              }}
+              onClick={startScan}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            >
+              Start Scan
+            </button>
+          </div>
+        )}
+        <p style={{ color: "#fff", fontFamily: "Ubuntu", textAlign: "center" }}>
+          Emotion: {emotion}
+        </p>
       </div>
-      <canvas
-        ref={canvasRef}
-        width="940"
-        height="650"
-        className="app__canvas"
-      />
-      <br />
-      <br />
-      <SongCard />
+      <div>
+        {/* <SongCard /> */}
+        <Container>
+          <Row className="mx-2 row row-cols-4">
+            {tracks.map((track, i) => {
+              return (
+                <Card>
+                  <Card.Img src={track.album.images[0].url} />
+                  <Card.Body>
+                    <Card.Title>{track.name}</Card.Title>
+                  </Card.Body>
+                </Card>
+              );
+            })}
+          </Row>
+        </Container>
+      </div>
     </div>
   );
 }
