@@ -1,7 +1,9 @@
 import { useRef, useEffect, useState } from "react";
 import "./App.css";
+import Button from "react-bootstrap/Button";
+import Card from "react-bootstrap/Card";
 import * as faceapi from "face-api.js";
-import Home from "./components/Home";
+import SongCard from "./components/playlistTable/songCard";
 import { makeDecision } from "./helpers/decisions";
 
 function App() {
@@ -176,7 +178,9 @@ function App() {
         height="650"
         className="app__canvas"
       />
-      {/* <Home /> */}
+      <br />
+      <br />
+      <SongCard />
     </div>
   );
 }
