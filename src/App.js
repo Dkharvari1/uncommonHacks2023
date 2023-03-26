@@ -44,29 +44,29 @@ function App() {
       .then(data => setAccessToken(data.access_token));
   }, []);
 
-  useEffect(() => {
-    search();
-  }, [emotion]);
+  // useEffect(() => {
+  //   search();
+  // }, [emotion]);
 
-  const search = async () => {
-    console.log("before", emotion);
-    var parameters = {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + accessToken,
-      },
-    };
-    var ID = await fetch(
-      "https://api.spotify.com/v1/search?q=" + emotion + "&type=track",
-      parameters
-    )
-      .then(response => response.json())
-      .then(data => {
-        console.log(data);
-        setTracks(data.tracks.items);
-      });
-  };
+  // const search = async () => {
+  //   console.log("before", emotion);
+  //   var parameters = {
+  //     method: "GET",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       Authorization: "Bearer " + accessToken,
+  //     },
+  //   };
+  //   var ID = await fetch(
+  //     "https://api.spotify.com/v1/search?q=" + emotion + "&type=track",
+  //     parameters
+  //   )
+  //     .then(response => response.json())
+  //     .then(data => {
+  //       console.log(data);
+  //       setTracks(data.tracks.items);
+  //     });
+  // };
 
   const loadModels = () => {
     Promise.all([
@@ -224,7 +224,8 @@ function App() {
       console.log("average", avg);
       const song = await makeDecision(avg.maxName);
       console.log("song", song);
-    }, 8000);
+      setTracks(song);
+    }, 6000);
   };
 
   const startScan = () => {
