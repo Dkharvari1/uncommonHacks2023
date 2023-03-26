@@ -1,10 +1,10 @@
 import React from "react";
 import Table from "react-bootstrap/Table";
-import tracks from "../../data/smallerData";
+// import tracks from "../../data/smallerData";
 import SongRow from "./SongRow";
 
-const SongCard = (songs) => {
-  console.log(tracks);
+const SongCard = ({songs}) => {
+  // console.log(tracks);
   return (
     <Table striped bordered>
       <thead>
@@ -17,7 +17,7 @@ const SongCard = (songs) => {
         </tr>
       </thead>
       <tbody>
-        {tracks.map((song) => (
+        {songs.map((song) => (
           <>
           {/* <div>{song.name}</div> */}
             <SongRow song={song} />

@@ -222,9 +222,9 @@ function App() {
       clearInterval(faceDetectionInterval);
       const avg = averageAllEmotions();
       console.log("average", avg);
-      const song = await makeDecision(avg.maxName);
-      console.log("song", song);
-      setTracks(song);
+      const songs = await makeDecision(avg.maxName);
+      console.log("song", songs);
+      setTracks(songs);
     }, 6000);
   };
 
@@ -294,8 +294,8 @@ function App() {
         </p>
       </div>
       <div>
-        {/* <SongCard /> */}
-        <Container>
+        <SongCard songs={tracks} />
+        {/* <Container>
           <Row className="mx-2 row row-cols-4">
             {tracks.map((track, i) => {
               return (
@@ -308,7 +308,7 @@ function App() {
               );
             })}
           </Row>
-        </Container>
+        </Container> */}
       </div>
     </div>
   );
