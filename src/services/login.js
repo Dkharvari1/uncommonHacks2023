@@ -25,7 +25,7 @@ const fuckingAroundWithOAuth = () => {
 
   var access_token = new URLSearchParams(url.search).get("access_token");
 
-
+  spotifyApi.setAccessToken(access_token);
 };
 
 login();

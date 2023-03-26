@@ -3,7 +3,7 @@ import Table from "react-bootstrap/Table";
 import tracks from "../../data/smallerData";
 import SongRow from "./SongRow";
 
-const SongCard = () => {
+const SongCard = (songs) => {
   console.log(tracks);
   return (
     <Table striped bordered>
